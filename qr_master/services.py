@@ -1,7 +1,8 @@
 import qrcode
 import io
 from django.core.files.base import ContentFile
-from qr_master.models import QRCode
+from qr_master.models import QRCode, QRScanHistory
+from collections import Counter
 
 class QRServices:
     @staticmethod
@@ -66,4 +67,81 @@ class QRServices:
         img.save(buffer, "PNG")
         instance.qr_image.save(f"{instance.id}.png", ContentFile(buffer.getvalue()), save=True)
         return instance
+    
+    @staticmethod
+    def update_qr_code(instance: QRCode):
+        qr = qrcode.QRCode(
+            version=None,
+            error_correction=qrcode.constants.ERROR_CORRECT_H,
+            box_size=10,
+            border=4,
+        )
+
+        redirect_url = f"http://127.0.0.1:8000/api/v1/qr/redirect/{instance.id}/"
+        qr.add_data(redirect_url)
+        qr.make(fit=True)
+
+        img = qr.make_image(
+            fill_color=instance.fg_color,
+            back_color=instance.bg_color
+        )
+
+        buffer = io.BytesIO()
+        img.save(buffer, format="PNG")
+
+        instance.qr_image.save(f"{instance.id}.png", ContentFile(buffer.getvalue()), save=True)
+    
+    @staticmethod
+    def calculate_qr_analytics(qr):
+        scans = QRScanHistory.objects.filter(qr_code = qr)
+
+        if not scans.exists():
+            return {
+                "total_scans": 0,
+                "unique_ips": 0,
+                "device_types": {},
+                "browsers": {},
+                "operating_systems": {},
+                "daily_scans": {},
+                "last_scanned": None,
+            }
+
+        # Extract device type
+        device_types = Counter(
+            scan.device_summary.split("(")[-1].replace(")", "").strip()
+            for scan in scans
+        )
+
+        # Extract browser
+        browsers = Counter(
+            scan.device_summary.split(" on ")[0].strip()
+            for scan in scans
+        )
+
+        # Extract OS
+        operating_systems = Counter(
+            (
+                scan.device_summary.split(" on ")[1].split("(")[0].strip()
+                if " on " in scan.device_summary
+                else "Other"
+            )
+            for scan in scans
+        )
+
+        # Count scans by date
+        daily_scans = Counter(
+            scan.scanned_at.date().isoformat()
+            for scan in scans
+        )
+
+        # Return analytics
+        return {
+            "total_scans": scans.count(),
+            "unique_ips": scans.values("ip_address").distinct().count(),
+            "device_types": dict(device_types),
+            "browsers": dict(browsers),
+            "operating_systems": dict(operating_systems),
+            "daily_scans": dict(daily_scans),
+            "last_scanned": scans.order_by("-scanned_at").first().scanned_at,
+        }
 
