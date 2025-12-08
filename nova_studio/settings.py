@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'api',
     'users',
     'qr_master',
+    'keep_note',
     "debug_toolbar",
 ]
 

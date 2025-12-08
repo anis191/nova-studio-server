@@ -6,6 +6,7 @@ router = routers.DefaultRouter()
 urlpatterns = [
     path('',include(router.urls)),
     path('qr/', include('qr_master.urls'), name='qr-master'),
+    path('keep/', include('keep_note.urls'), name='keep-notes'),
 
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
