@@ -24,4 +24,4 @@ class NoteViewSet(ModelViewSet):
         return {'user' : self.request.user}
     
     def get_queryset(self):
-        return Note.objects.filter(owner = self.request.user).prefetch_related("tags")
+        return Note.objects.filter(owner = self.request.user).select_related("owner").prefetch_related("tags")
