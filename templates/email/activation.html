@@ -1,0 +1,17 @@
+<h2>Welcome to {{ site_name }}</h2>
+<p>Hi {{ user_email }},</p>
+
+<p>Thank you for registering with <strong>{{ site_name }}</strong>.</p>
+
+<p>Please click the button below to activate your account:</p>
+<p>
+<a href="{{ protocol }}://{{ domain }}/{{ url }}"
+   style="display:inline-block;background:#2563eb;color:white;padding:12px 18px;text-decoration:none;border-radius:6px;font-weight:bold;">
+Activate Account
+</a>
+</p>
+
+<p>If the button doesn't work, copy and paste this link:</p>
+<p>{{ protocol }}://{{ domain }}/{{ url }}</p>
+
+<p>Thanks,<br>{{ site_name }} Team</p>

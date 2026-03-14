@@ -11,15 +11,15 @@ services:
     environment:
       - REDIS_ARGS=--appendonly yes --requirepass ${REDIS_PASSWORD}
 
-  redis-insight:
-    image: redis/redisinsight:latest
-    container_name: redis-insight
-    restart: unless-stopped
-    ports:
-      - "5540:5540"
-    volumes:
-      - redisinsight_data:/data
+  # redis-insight:
+    # image: redis/redisinsight:latest
+    # container_name: redis-insight
+    # restart: unless-stopped
+    # ports:
+      # - "5540:5540"
+    # volumes:
+      # - redisinsight_data:/data
 
 volumes:
   redisstack_data:
-  redisinsight_data:
+  # redisinsight_data:

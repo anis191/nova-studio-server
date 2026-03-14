@@ -69,7 +69,8 @@ ROOT_URLCONF = 'nova_studio.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # 'DIRS': [],
+        'DIRS': [ BASE_DIR / 'templates' ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -161,9 +162,15 @@ SIMPLE_JWT = {
 }
 
 DJOSER = {
+    'EMAIL_FRONTEND_PROTOCOL' : config('FRONTEND_PROTOCOL'),
+    'EMAIL_FRONTEND_DOMAIN' : config('FRONTEND_DOMAIN'),
     'PASSWORD_RESET_CONFIRM_URL': 'password/reset/confirm/{uid}/{token}',
     'ACTIVATION_URL': 'activate/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
+    'EMAIL_FRONTEND_SITE_NAME': 'Nova Studio',
+    'EMAIL': {
+        'activation': 'users.emails.CustomActivationEmail',
+    },
     'SERIALIZERS': {
         'user_create': 'users.serializers.UserCreateSerializer',
         'current_user': 'users.serializers.UserSerializer',
@@ -192,3 +199,7 @@ EMAIL_PORT = config('EMAIL_PORT', cast=int)
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+
+# Frontend (for Djoser activation links)
+FRONTEND_PROTOCOL = config('FRONTEND_PROTOCOL')
+FRONTEND_DOMAIN = config('FRONTEND_DOMAIN')
